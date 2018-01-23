@@ -1,8 +1,10 @@
 // const config = require('config')
 import Koa from 'koa';
+import jwt from 'koa-jwt';
 import logger from 'koa-logger';
 import bodyParser from 'koa-bodyparser';
 import config from './config';
+import authRoute from './router/auth';
 import router from './router';
 import db from './middleware/database';
 
@@ -26,6 +28,14 @@ app.use(async (ctx, next) => {
   ctx.set('X-Response-Time', `${ms}ms`);
 });
 
+// Auth route
+// Public route
+app.use(authRoute());
+
+// Check if token is valid
+app.use(jwt({ secret: process.env.SECRET || 'my-secret' }));
+
+// Protected routes
 app.use(router());
 // app.use(router.allowedMethods());
 
